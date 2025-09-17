@@ -1,4 +1,4 @@
-module Question exposing (..)
+module Question exposing (Convert, Model, Msg, Qhtml, element)
 
 import Browser
 import Html exposing (Html, div)
