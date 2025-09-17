@@ -76,7 +76,7 @@ view d f =
                 []
     in
     { question = text question
-    , answer = div [] [quotient, text "remainder", remainder]
+    , answer = div [] [ quotient, text " remainder ", remainder ]
     }
 
 
@@ -90,7 +90,7 @@ update d m =
             { d | remainder = String.toInt val }
 
 
-main : Program () (Question.Model Division) (Question.Msg Msg)
+main : Program String (Question.Model Division) (Question.Msg Msg)
 main =
     Question.element
         { generator = generator

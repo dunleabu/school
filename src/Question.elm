@@ -1,8 +1,9 @@
 module Question exposing (Convert, Model, Msg, Qhtml, element, unicode)
 
 import Browser
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, button, div, h3, hr, input, text)
+import Html.Attributes exposing (class, name, type_)
+import Html.Events exposing (onClick, onInput)
 import Random
 
 
@@ -36,17 +37,18 @@ type alias Convert m =
     m -> Msg m
 
 
-type alias Class zzz_question msg =
-    { generator : Random.Generator zzz_question
-    , solve : zzz_question -> zzz_question
-    , view : zzz_question -> Convert msg -> Qhtml msg
-    , update : zzz_question -> msg -> zzz_question
+type alias Class q msg =
+    { generator : Random.Generator q
+    , solve : q -> q
+    , view : q -> Convert msg -> Qhtml msg
+    , update : q -> msg -> q
     }
 
 
-type alias Model zzz_question =
+type alias Model q =
     { seed : Int
-    , rows : List (Row zzz_question)
+    , rows : List (Row q)
+    , title : String
     }
 
 
@@ -74,7 +76,7 @@ qmark =
 -- Function to create Browser element -----------------------------------------
 
 
-element : Class q m -> Program () (Model q) (Msg m)
+element : Class q m -> Program String (Model q) (Msg m)
 element class =
     Browser.element
         { init = init class
@@ -88,13 +90,13 @@ element class =
 -- init -----------------------------------------------------------------------
 
 
-init : Class q m -> () -> ( Model q, Cmd (Msg m) )
-init class _ =
-    ( modelFromSeed class (Just 0), Cmd.none )
+init : Class q m -> String -> ( Model q, Cmd (Msg m) )
+init class title =
+    ( modelFromSeed class title (Just 0), Cmd.none )
 
 
-modelFromSeed : Class q m -> Maybe Int -> Model q
-modelFromSeed c s =
+modelFromSeed : Class q m -> String -> Maybe Int -> Model q
+modelFromSeed c title s =
     let
         seed =
             Maybe.withDefault 0 s
@@ -105,7 +107,10 @@ modelFromSeed c s =
         qs =
             Random.step gen (Random.initialSeed seed) |> Tuple.first
     in
-    { seed = seed, rows = List.indexedMap (\i q -> { question = q, status = Todo, id = i }) qs }
+    { seed = seed
+    , rows = List.indexedMap (\i q -> { question = q, status = Todo, id = i }) qs
+    , title = title
+    }
 
 
 
@@ -114,59 +119,87 @@ modelFromSeed c s =
 
 view : Class q m -> Model q -> Html (Msg m)
 view c m =
-    div []
-        (List.map (viewRow c) m.rows)
+    --enterSeed
+    h3 [] [ text m.title ]
+        :: List.map (viewRow c) m.rows
+        ++ [ div [] [ cheat, enterSeed ] ]
+        |> List.intersperse (hr [] [])
+        |> div []
 
 
-viewRow : Class zzz_q m -> Row zzz_q -> Html (Msg m)
+viewRow : Class q m -> Row q -> Html (Msg m)
 viewRow c r =
     let
         h : Qhtml m
         h =
             c.view r.question (QMsg r.id)
-        s = case r.status of
-            Todo ->
-                qmark
 
-            Incorrect ->
-                cross
+        s =
+            case r.status of
+                Todo ->
+                    qmark
 
-            Correct ->
-                tick
+                Incorrect ->
+                    cross
+
+                Correct ->
+                    tick
     in
-    div [class "question"] [ h.question, h.answer, text s]
+    div [ class "question" ] [ h.question, h.answer, text s ]
+
+
+cheat =
+    button [ onClick Cheat ] [ text "CHEAT!" ]
+
+
+enterSeed =
+    div [] [ text "seed = ", input [ type_ "number", name "seed", onInput NewSeed ] [] ]
 
 
 
 -- update ---------------------------------------------------------------------
 
 
-update : Class zzz_q m -> Msg m -> Model zzz_q -> ( Model zzz_q, Cmd (Msg m) )
+update : Class q m -> Msg m -> Model q -> ( Model q, Cmd (Msg m) )
 update c rm model =
     case rm of
         QMsg i m ->
             ( { model | rows = List.map (updateRow c i m) model.rows }, Cmd.none )
 
-        _ ->
-            ( model, Cmd.none )
+        NewSeed s ->
+            ( modelFromSeed c model.title <| String.toInt s, Cmd.none )
+
+        Cheat ->
+            ( { model | rows = List.map (showAnswer c) model.rows }, Cmd.none )
 
 
-updateRow : Class zzz_q m -> Int -> m -> Row zzz_q -> Row zzz_q
+updateRow : Class q m -> Int -> m -> Row q -> Row q
 updateRow c id msg row =
     if id == row.id then
         let
-            q =
+            question =
                 c.update row.question msg
         in
         { row
-            | question = q
-            , status =
-                if q == c.solve q then
-                    Correct
-
-                else
-                    Incorrect
+            | question = question
+            , status = status c question
         }
 
     else
         row
+
+
+showAnswer c row =
+    let
+        question =
+            c.solve row.question
+    in
+    { row | question = question, status = status c question }
+
+
+status c question =
+    if question == c.solve question then
+        Correct
+
+    else
+        Incorrect
