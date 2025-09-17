@@ -97,4 +97,5 @@ main =
         , solve = solve
         , view = view
         , update = update
+        , repeats = 15
         }

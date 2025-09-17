@@ -42,6 +42,7 @@ type alias Class q msg =
     , solve : q -> q
     , view : q -> Convert msg -> Qhtml msg
     , update : q -> msg -> q
+    , repeats : Int
     }
 
 
@@ -102,7 +103,7 @@ modelFromSeed c title s =
             Maybe.withDefault 0 s
 
         gen =
-            Random.list 10 c.generator
+            Random.list c.repeats c.generator
 
         qs =
             Random.step gen (Random.initialSeed seed) |> Tuple.first
