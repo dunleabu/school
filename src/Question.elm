@@ -1,7 +1,8 @@
 module Question exposing (Convert, Model, Msg, Qhtml, element, unicode)
 
 import Browser
-import Html exposing (Html, div)
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Random
 
 
@@ -123,8 +124,17 @@ viewRow c r =
         h : Qhtml m
         h =
             c.view r.question (QMsg r.id)
+        s = case r.status of
+            Todo ->
+                qmark
+
+            Incorrect ->
+                cross
+
+            Correct ->
+                tick
     in
-    div [] [ h.question, h.answer ]
+    div [class "question"] [ h.question, h.answer, text s]
 
 
 
