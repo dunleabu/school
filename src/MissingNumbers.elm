@@ -79,13 +79,13 @@ view x f =
         ( ( a, b, c ), d ) =
             case x of
                 MissingMultiplicand n p m ->
-                    ( ( "?", String.fromInt n, String.fromInt p ), m )
+                    ( ( "_", String.fromInt n, String.fromInt p ), m )
 
                 MissingMultiplier m p n ->
-                    ( ( String.fromInt m, "?", String.fromInt p ), n )
+                    ( ( String.fromInt m, "_", String.fromInt p ), n )
 
                 MissingProduct n m p ->
-                    ( ( String.fromInt n, String.fromInt m, "?" ), p )
+                    ( ( String.fromInt n, String.fromInt m, "_" ), p )
     in
     { question = text <| a ++ multSymbol ++ b ++ " = " ++ c
     , answer =
