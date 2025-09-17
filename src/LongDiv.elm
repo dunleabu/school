@@ -51,27 +51,11 @@ update d m =
             { d | remainder = String.toInt val }
 
 
-class : Question.Class Division Msg
-class =
+main : Program () (Question.Model Division) (Question.Msg Msg)
+main =
+    Question.element
         { generator = generator
         , solve = solve
         , view = view
         , update = update
         }
-
-
-main : Program () (Question.Model Division) (Question.Msg Msg)
-main = Question.makeElement class
-{-
-main : Program () (Question.Model Division) (Question.Msg Msg)
-main =
-    Browser.element
-        { init = \_ -> ( modelFromSeed generator (Just 0), Cmd.none )
-        , view = b_view class
-        , update = Question.updateModel class
-        , subscriptions = \_ -> Sub.none
-        }
--}
-
-
-
