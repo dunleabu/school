@@ -1,7 +1,7 @@
 module Question exposing (Convert, Model, Msg, Qhtml, element, unicode)
 
 import Browser
-import Html exposing (Html, button, div, h3, hr, input, text)
+import Html exposing (Html, button, div, footer, h3, hr, input, text)
 import Html.Attributes exposing (class, name, type_)
 import Html.Events exposing (onClick, onInput)
 import Random
@@ -122,7 +122,7 @@ view c m =
     --enterSeed
     h3 [] [ text m.title ]
         :: List.map (viewRow c) m.rows
-        ++ [ div [] [ cheat, enterSeed ] ]
+        ++ [ footer [] [ enterSeed, cheat ] ]
         |> List.intersperse (hr [] [])
         |> div []
 

@@ -3,10 +3,20 @@
     <head>
     <title>Long Division</title>
     <style>
+
+        * {    
+        font-family: monospace;
+        }
+            
         .question {
         display: grid;
         grid-template-columns: 3fr 6fr 1fr;
-        font-family: monospace;
+        }
+        
+        footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px
         }
 
         hr:first-of-type {
@@ -62,7 +72,7 @@
         <script src="app.js"></script>
         <script>
             Elm.LongDiv.init({node: document.getElementById("app"),
-            flags: "My Title"});
+            flags: "Long Division"});
         </script>
     </body>
 </html>
