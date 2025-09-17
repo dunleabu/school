@@ -1,4 +1,4 @@
-module Question exposing (Convert, Model, Msg, Qhtml, element)
+module Question exposing (Convert, Model, Msg, Qhtml, element, unicode)
 
 import Browser
 import Html exposing (Html, div)
@@ -47,6 +47,26 @@ type alias Model zzz_question =
     { seed : Int
     , rows : List (Row zzz_question)
     }
+
+
+
+-- Utility functions ----------------------------------------------------------
+
+
+unicode n =
+    " " ++ String.fromChar (Char.fromCode n) ++ " "
+
+
+tick =
+    unicode 0x2705
+
+
+cross =
+    unicode 0x274C
+
+
+qmark =
+    unicode 0x2753
 
 
 

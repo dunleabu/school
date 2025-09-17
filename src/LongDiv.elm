@@ -17,6 +17,10 @@ type Msg
 type alias Division =
     { divisor : Int, dividend : Int, quotient : Maybe Int, remainder : Maybe Int }
 
+divideSymbol =
+    Question.unicode 0xF7
+divideText d =
+    String.fromInt d.dividend ++ divideSymbol ++ String.fromInt d.divisor ++ " = "
 
 generator : Random.Generator Division
 generator =
@@ -36,7 +40,11 @@ solve d =
 
 view : Division -> Question.Convert Msg -> Question.Qhtml Msg
 view d f =
-    { question = text "question"
+    let
+
+        question = String.fromInt d.dividend ++ divideSymbol ++ String.fromInt d.divisor ++ " = "
+    in
+    { question = text question
     , answer = text "answer"
     }
 
