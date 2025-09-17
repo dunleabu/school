@@ -51,8 +51,8 @@ update d m =
             { d | remainder = String.toInt val }
 
 
+class : Question.Class Division Msg
 class =
-    Question.Class
         { generator = generator
         , solve = solve
         , view = view
@@ -61,6 +61,9 @@ class =
 
 
 main : Program () (Question.Model Division) (Question.Msg Msg)
+main = Question.makeElement class
+{-
+main : Program () (Question.Model Division) (Question.Msg Msg)
 main =
     Browser.element
         { init = \_ -> ( modelFromSeed generator (Just 0), Cmd.none )
@@ -68,24 +71,7 @@ main =
         , update = Question.updateModel class
         , subscriptions = \_ -> Sub.none
         }
+-}
 
 
-modelFromSeed : Random.Generator q -> Maybe Int -> Question.Model q
-modelFromSeed g s =
-    let
-        seed =
-            Maybe.withDefault 0 s
 
-        gen =
-            Random.list 10 g
-
-        qs =
-            Random.step gen (Random.initialSeed seed) |> Tuple.first
-    in
-    { seed = seed, rows = List.indexedMap (\i q -> { question = q, status = Question.Todo, id = i }) qs }
-
-
-b_view : Question.Class q m -> Question.Model q -> Html (Question.Msg m)
-b_view c m =
-    div []
-        (List.map (Question.viewRow c) m.rows)
